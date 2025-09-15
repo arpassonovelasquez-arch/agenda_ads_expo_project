@@ -1,7 +1,7 @@
 workflows:
   android_build:
     name: Build React Native Android (Debug APK)
-    instance_type: linux_x2    # Usa la instancia gratuita
+    instance_type: linux_x2
     max_build_duration: 60
     environment:
       node: 18
