@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Agenda para Bienestar",
+    "slug": "agenda-ads-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.agenda.ads",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-3271573238193487~3720477212"
+      }
+    }
+  }
+}
