@@ -1,19 +1,20 @@
 workflows:
-  android_build:
-    name: Build React Native Android (Debug APK)
-    instance_type: mac_mini_m1
+  react_native_expo:
+    name: Build Expo (Android APK)
+    instance_type: linux_x2
     max_build_duration: 60
     environment:
-      node: 18
-      java: 17
-      vars:
-        ANDROID_HOME: /opt/android-sdk-linux
+      node: latest
+      npm: latest
     scripts:
       - name: Instalar dependencias
         script: |
           npm install
-      - name: Construir APK
+      - name: Build APK con Expo
         script: |
+          npx expo install
+          npx expo export
+          npx expo prebuild
           cd android && ./gradlew assembleDebug
     artifacts:
       - android/app/build/outputs/**/*.apk
