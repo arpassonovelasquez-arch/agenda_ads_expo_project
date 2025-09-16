@@ -1,24 +1,30 @@
 {
   "expo": {
-    "name": "Agenda para Bienestar",
-    "slug": "agenda-ads-expo",
+    "name": "Agenda Ads (Expo)",
+    "slug": "agenda-ads-expo-project",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "agendaads",
+    "userInterfaceStyle": "automatic",
+
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFF"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": ["**/*"],
+
     "android": {
-      "package": "com.agenda.ads",
-      "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3271573238193487~3720477212"
+      "package": "com.agenda.ads",         // <- único, distinto al otro repo
+      "permissions": [],
+      "icon": "./assets/adaptive-icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
       }
-    }
+    },
+
+    "updates": { "fallbackToCacheTimeout": 0 },
+    "assetBundlePatterns": ["**/*"]
   }
 }
