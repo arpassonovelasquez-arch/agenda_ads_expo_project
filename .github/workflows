@@ -1,0 +1,10 @@
+agenda_ads_expo_project/
+ ┣ .github/
+ ┃ ┗ workflows/
+ ┃   ┗ build-android.yml
+ ┣ App.js
+ ┣ app.json
+ ┣ codemagic.yaml
+ ┣ eas.json
+ ┣ package.json
+ ┗ README.txt
