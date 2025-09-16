@@ -1,0 +1,64 @@
+name: Build & Release Android APK (Expo)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Use Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Expo CLI
+        run: npm i -g expo@^50
+
+      - name: Verify assets exist
+        run: |
+          for f in assets/icon.png assets/splash.png assets/adaptive-icon.png; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Falta el archivo requerido: $f"; exit 1;
+            fi
+            file "$f" || true
+          done
+
+      - name: Expo prebuild (Android)
+        env: { CI: true }
+        run: npx expo prebuild --platform android --clean --no-install
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build APK (debug)
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenda-ads-expo-debug
+          path: android/app/build/outputs/apk/debug/*.apk
+
+      - name: Get APK path
+        id: apk
+        run:
