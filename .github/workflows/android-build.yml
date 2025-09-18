@@ -38,7 +38,34 @@ jobs:
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
-
+      - name: Patch Gradle settings (set plugin versions)
+        run: |
+          cd android
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+            repositories {
+              gradlePluginPortal()
+              google()
+              mavenCentral()
+            }
+            plugins {
+              id("com.android.application") version "8.6.0"
+              id("com.android.library") version "8.6.0"
+              id("org.jetbrains.kotlin.android") version "1.9.24"
+            }
+          }
+          @Suppress("UnstableApiUsage")
+          dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories {
+              google()
+              mavenCentral()
+            }
+          }
+          rootProject.name = "android"
+          include(":app")
+          EOF
+          
       - name: Build APK (debug)
         run: cd android && ./gradlew assembleDebug
 
