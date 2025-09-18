@@ -1,0 +1,49 @@
+name: Android Debug APK (Expo prebuild)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install deps
+        run: |
+          npm ci || npm install
+
+      - name: Use Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Expo CLI
+        run: npm i -g expo-cli
+
+      - name: Expo prebuild (Android)
+        env:
+          EXPO_NO_TELEMETRY: '1'
+          CI: 'true'
+        run: npx expo prebuild -p android --non-interactive
+
+      - name: Make gradlew executable
+        run: cd android && chmod +x gradlew
+
+      - name: Build APK (debug)
+        run: cd android && ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: android/app/build/outputs/apk/debug/*.apk
