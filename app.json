@@ -7,24 +7,14 @@
     "scheme": "agendaads",
     "userInterfaceStyle": "automatic",
 
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
-    },
-
     "android": {
-      "package": "com.agenda.ads",         // <- único, distinto al otro repo
-      "permissions": [],
-      "icon": "./assets/adaptive-icon.png",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+      "package": "com.agenda.ads",
+      "permissions": []
     },
 
-    "updates": { "fallbackToCacheTimeout": 0 },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
     "assetBundlePatterns": ["**/*"]
   }
 }
