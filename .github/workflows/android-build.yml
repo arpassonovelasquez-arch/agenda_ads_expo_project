@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,7 +36,7 @@ jobs:
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
-      - name: Patch settings.gradle
+      - name: Patch settings.gradle (AGP 8.5.2 + Kotlin 1.9.24)
         run: |
           cd android
           cat > settings.gradle <<'EOF'
@@ -48,9 +47,9 @@ jobs:
                   mavenCentral()
               }
               plugins {
-                  id 'com.android.application' version '8.1.0'
-                  id 'com.android.library' version '8.1.0'
-                  id 'org.jetbrains.kotlin.android' version '1.8.22'
+                  id 'com.android.application' version '8.5.2'
+                  id 'com.android.library' version '8.5.2'
+                  id 'org.jetbrains.kotlin.android' version '1.9.24'
               }
           }
 
