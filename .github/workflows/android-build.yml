@@ -32,21 +32,28 @@ jobs:
         env:
           EXPO_NO_TELEMETRY: '1'
           CI: 'true'
-        run: npx expo prebuild -p android --no-install
+        run: npx expo prebuild -p android --clean
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
       - name: Patch settings.gradle
         run: |
-          cat > android/settings.gradle <<'EOF'
+          cd android
+          cat > settings.gradle <<'EOF'
           pluginManagement {
               repositories {
                   gradlePluginPortal()
                   google()
                   mavenCentral()
               }
+              plugins {
+                  id 'com.android.application' version '8.1.0'
+                  id 'com.android.library' version '8.1.0'
+                  id 'org.jetbrains.kotlin.android' version '1.8.22'
+              }
           }
+
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
@@ -54,6 +61,7 @@ jobs:
                   mavenCentral()
               }
           }
+
           rootProject.name = "android"
           include(":app")
           EOF
