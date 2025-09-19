@@ -1,19 +1,57 @@
 workflows:
-  android_build:
-    name: Build React Native Android (Debug APK)
-    instance_type: linux   # <--- ESTA ES LA GRATUITA
+  android_debug:
+    name: Android Debug (Expo prebuild)
     max_build_duration: 60
+    instance_type: linux
     environment:
       node: 18
       java: 17
       vars:
-        ANDROID_HOME: /opt/android-sdk-linux
+        EXPO_NO_TELEMETRY: "1"
+        CI: "true"
+    cache:
+      cache_paths:
+        - $CM_BUILD_DIR/node_modules
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/wrapper
     scripts:
       - name: Instalar dependencias
         script: |
-          npm install
-      - name: Construir APK
+          npm ci || npm install
+      - name: Instalar Expo CLI
+        script: npm i -g expo-cli
+      - name: Expo prebuild (Android)
+        script: npx expo prebuild -p android --clean
+      - name: Dar permisos a gradlew
+        script: chmod +x android/gradlew
+      - name: Parchear settings.gradle
         script: |
-          cd android && ./gradlew assembleDebug
+          cat > android/settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  gradlePluginPortal()
+                  google()
+                  mavenCentral()
+              }
+              plugins {
+                  id 'com.android.application' version '8.1.0'
+                  id 'com.android.library'     version '8.1.0'
+                  id 'org.jetbrains.kotlin.android' version '1.8.22'
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "android"
+          include(":app")
+          EOF
+      - name: Construir APK Debug
+        script: |
+          cd android
+          ./gradlew assembleDebug
     artifacts:
       - android/app/build/outputs/**/*.apk
