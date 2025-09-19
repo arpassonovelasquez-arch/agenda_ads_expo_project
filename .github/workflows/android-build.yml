@@ -23,43 +23,36 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: 17
 
       - name: Install Expo CLI
-        run: npm i -g expo-cli
+        run: npm install -g expo-cli
 
       - name: Expo prebuild (Android)
         env:
           EXPO_NO_TELEMETRY: '1'
           CI: 'true'
-        run: npx expo prebuild -p android --clean
+        run: npx expo prebuild -p android --no-install
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
-      - name: Patch Gradle settings (set plugin versions)
-        working-directory: android
+      - name: Patch settings.gradle
         run: |
-          cat > settings.gradle <<'EOF'
+          cat > android/settings.gradle <<'EOF'
           pluginManagement {
-            repositories {
-              gradlePluginPortal()
-              google()
-              mavenCentral()
-            }
-            plugins {
-              id 'com.android.application' version '8.4.2'
-              id 'com.android.library'     version '8.4.2'
-              id 'org.jetbrains.kotlin.android' version '1.9.24'
-            }
+              repositories {
+                  gradlePluginPortal()
+                  google()
+                  mavenCentral()
+              }
           }
-          @Suppress("UnstableApiUsage")
           dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-              google()
-              mavenCentral()
-            }
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
           }
           rootProject.name = "android"
           include(":app")
