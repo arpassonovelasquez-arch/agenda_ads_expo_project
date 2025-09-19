@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +37,19 @@ jobs:
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
-      - name: Patch settings.gradle (AGP 8.5.2 + Kotlin 1.9.24)
+      # --- NUEVO: define kotlinVersion para el classpath del build.gradle ---
+      - name: Ensure Kotlin version
+        run: |
+          cd android
+          # Si existe, la reemplaza; si no, la crea.
+          if grep -q '^kotlinVersion=' gradle.properties; then
+            sed -i 's/^kotlinVersion=.*/kotlinVersion=1.9.0/' gradle.properties
+          else
+            echo 'kotlinVersion=1.9.0' >> gradle.properties
+          fi
+
+      # Dejamos settings.gradle fijo para evitar el error de las llaves
+      - name: Patch settings.gradle
         run: |
           cd android
           cat > settings.gradle <<'EOF'
@@ -47,9 +60,9 @@ jobs:
                   mavenCentral()
               }
               plugins {
-                  id 'com.android.application' version '8.5.2'
-                  id 'com.android.library' version '8.5.2'
-                  id 'org.jetbrains.kotlin.android' version '1.9.24'
+                  id 'com.android.application' version '8.1.0'
+                  id 'com.android.library'     version '8.1.0'
+                  id 'org.jetbrains.kotlin.android' version '1.9.0'
               }
           }
 
@@ -66,7 +79,7 @@ jobs:
           EOF
 
       - name: Build APK (debug)
-        run: cd android && ./gradlew assembleDebug
+        run: cd android && ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
