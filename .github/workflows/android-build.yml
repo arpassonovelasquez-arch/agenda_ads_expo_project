@@ -33,13 +33,12 @@ jobs:
         env:
           EXPO_NO_TELEMETRY: '1'
           CI: 'true'
-        run: npx expo prebuild -p android --non-interactive
+        run: npx expo prebuild -p android
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
-      # 👇 ESTE ES EL ÚNICO bloque "Patch Gradle settings"
-      - name: Patch Gradle settings
+      - name: Patch Gradle settings (set plugin versions)
         run: |
           cd android
           cat > settings.gradle <<'EOF'
@@ -50,11 +49,12 @@ jobs:
                   mavenCentral()
               }
               plugins {
-                  id("com.android.application") version "8.5.2"
-                  id("com.android.library") version "8.5.2"
+                  id("com.android.application") version "8.1.4"
+                  id("com.android.library") version "8.1.4"
                   id("org.jetbrains.kotlin.android") version "1.9.22"
               }
           }
+
           @Suppress("UnstableApiUsage")
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -63,6 +63,7 @@ jobs:
                   mavenCentral()
               }
           }
+
           rootProject.name = "android"
           include(":app")
           EOF
