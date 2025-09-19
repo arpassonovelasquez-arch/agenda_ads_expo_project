@@ -15,7 +15,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          # OJO: sin cache porque no hay lockfile
 
       - name: Install deps
         run: |
@@ -38,34 +37,36 @@ jobs:
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
-      - name: Patch Gradle settings (set plugin versions)
+
+      # 👇 ESTE ES EL ÚNICO bloque "Patch Gradle settings"
+      - name: Patch Gradle settings
         run: |
           cd android
           cat > settings.gradle <<'EOF'
           pluginManagement {
-            repositories {
-              gradlePluginPortal()
-              google()
-              mavenCentral()
-            }
-            plugins {
-              id("com.android.application") version "8.6.0"
-              id("com.android.library") version "8.6.0"
-              id("org.jetbrains.kotlin.android") version "1.9.24"
-            }
+              repositories {
+                  gradlePluginPortal()
+                  google()
+                  mavenCentral()
+              }
+              plugins {
+                  id("com.android.application") version "8.5.2"
+                  id("com.android.library") version "8.5.2"
+                  id("org.jetbrains.kotlin.android") version "1.9.22"
+              }
           }
           @Suppress("UnstableApiUsage")
           dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-              google()
-              mavenCentral()
-            }
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
           }
           rootProject.name = "android"
           include(":app")
           EOF
-          
+
       - name: Build APK (debug)
         run: cd android && ./gradlew assembleDebug
 
@@ -73,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
