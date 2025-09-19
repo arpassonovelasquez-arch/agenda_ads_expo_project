@@ -15,6 +15,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          # sin cache para no exigir package-lock/yarn.lock
+          cache: ''
 
       - name: Install deps
         run: |
@@ -33,39 +35,39 @@ jobs:
         env:
           EXPO_NO_TELEMETRY: '1'
           CI: 'true'
-        run: npx expo prebuild -p android
+        run: npx expo prebuild -p android --non-interactive
 
       - name: Make gradlew executable
         run: cd android && chmod +x gradlew
 
+      # 🔧 CORRECCIÓN: settings.gradle en GROOVY
       - name: Patch Gradle settings (set plugin versions)
         run: |
           cd android
           cat > settings.gradle <<'EOF'
           pluginManagement {
-              repositories {
-                  gradlePluginPortal()
-                  google()
-                  mavenCentral()
-              }
-              plugins {
-                  id("com.android.application") version "8.1.4"
-                  id("com.android.library") version "8.1.4"
-                  id("org.jetbrains.kotlin.android") version "1.9.22"
-              }
+            repositories {
+              gradlePluginPortal()
+              google()
+              mavenCentral()
+            }
+            plugins {
+              id 'com.android.application' version '8.2.2'
+              id 'com.android.library'     version '8.2.2'
+              id 'org.jetbrains.kotlin.android' version '1.9.24'
+            }
           }
 
-          @Suppress("UnstableApiUsage")
           dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories {
+              google()
+              mavenCentral()
+            }
           }
 
-          rootProject.name = "android"
-          include(":app")
+          rootProject.name = 'android'
+          include ':app'
           EOF
 
       - name: Build APK (debug)
@@ -75,4 +77,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/*.apk
